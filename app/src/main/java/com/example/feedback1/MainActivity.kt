@@ -64,3 +64,11 @@ fun BibliotecaNovelasApp() {
     }
 }
 
+@Composable
+fun ListaDeNovelas(novelas: List<Novela>, onEliminar: (Novela) -> Unit, onFavoritoToggle: (Novela) -> Unit) {
+    LazyColumn {
+        items(novelas.size) { index ->
+            NovelaItem(novelas[index], onEliminar, onFavoritoToggle)
+        }
+    }
+}
