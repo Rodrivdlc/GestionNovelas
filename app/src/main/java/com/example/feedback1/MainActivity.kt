@@ -23,3 +23,44 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Composable
+fun BibliotecaNovelasApp() {
+    var listaNovelas by remember { mutableStateOf(mutableListOf<Novela>()) }
+    var titulo by remember { mutableStateOf(TextFieldValue("")) }
+    var autor by remember { mutableStateOf(TextFieldValue("")) }
+    var anoPublicacion by remember { mutableStateOf(TextFieldValue("")) }
+    var sinopsis by remember { mutableStateOf(TextFieldValue("")) }
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(text = "Biblioteca de Novelas", style = MaterialTheme.typography.h5)
+
+        // Input fields to add a new novel
+        BasicTextField(value = titulo, onValueChange = { titulo = it }, modifier = Modifier.fillMaxWidth(), decorationBox = { innerTextField -> TextFieldDefaults.TextFieldDecorationBox(innerTextField = innerTextField, label = { Text("Título") }) })
+        BasicTextField(value = autor, onValueChange = { autor = it }, modifier = Modifier.fillMaxWidth(), decorationBox = { innerTextField -> TextFieldDefaults.TextFieldDecorationBox(innerTextField = innerTextField, label = { Text("Autor") }) })
+        BasicTextField(value = anoPublicacion, onValueChange = { anoPublicacion = it }, modifier = Modifier.fillMaxWidth(), decorationBox = { innerTextField -> TextFieldDefaults.TextFieldDecorationBox(innerTextField = innerTextField, label = { Text("Año de Publicación") }) })
+        BasicTextField(value = sinopsis, onValueChange = { sinopsis = it }, modifier = Modifier.fillMaxWidth(), decorationBox = { innerTextField -> TextFieldDefaults.TextFieldDecorationBox(innerTextField = innerTextField, label = { Text("Sinopsis") }) })
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = {
+            if (titulo.text.isNotEmpty() && autor.text.isNotEmpty() && anoPublicacion.text.isNotEmpty() && sinopsis.text.isNotEmpty()) {
+                listaNovelas.add(Novela(titulo.text, autor.text, anoPublicacion.text.toInt(), sinopsis.text))
+                titulo = TextFieldValue("")
+                autor = TextFieldValue("")
+                anoPublicacion = TextFieldValue("")
+                sinopsis = TextFieldValue("")
+            }
+        }) {
+            Text("Añadir Novela")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        ListaDeNovelas(listaNovelas, onEliminar = { novela ->
+            listaNovelas.remove(novela)
+        }, onFavoritoToggle = { novela ->
+            novela.esFavorita = !novela.esFavorita
+        })
+    }
+}
+
