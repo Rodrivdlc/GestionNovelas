@@ -72,3 +72,26 @@ fun ListaDeNovelas(novelas: List<Novela>, onEliminar: (Novela) -> Unit, onFavori
         }
     }
 }
+
+@Composable
+fun NovelaItem(novela: Novela, onEliminar: (Novela) -> Unit, onFavoritoToggle: (Novela) -> Unit) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)
+        .clickable { onFavoritoToggle(novela) }) {
+        Text(text = novela.titulo, style = MaterialTheme.typography.h6)
+        Text(text = "Autor: ${novela.autor}")
+        Text(text = "Año: ${novela.anoPublicacion}")
+        Text(text = if (novela.esFavorita) "⭐ Favorita" else "No Favorita", style = MaterialTheme.typography.body1)
+
+        Row {
+            Button(onClick = { onEliminar(novela) }) {
+                Text("Eliminar")
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(onClick = { onFavoritoToggle(novela) }) {
+                Text(if (novela.esFavorita) "Quitar de Favoritos" else "Marcar como Favorita")
+            }
+        }
+    }
+}
