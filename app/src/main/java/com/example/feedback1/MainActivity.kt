@@ -95,3 +95,9 @@ fun NovelaItem(novela: Novela, onEliminar: (Novela) -> Unit, onFavoritoToggle: (
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    BibliotecaNovelasApp()
+}
