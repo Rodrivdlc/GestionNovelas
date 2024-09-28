@@ -32,7 +32,7 @@ fun BibliotecaNovelasApp() {
     var sinopsis by remember { mutableStateOf(TextFieldValue("")) }
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = "Biblioteca de Novelas", style = MaterialTheme.typography.h5)
+        Text(text = "Biblioteca de Novelas", style = MaterialTheme.typography.headlineSmall)
 
         // Input fields to add a new novel
         BasicTextField(value = titulo, onValueChange = { titulo = it }, modifier = Modifier.fillMaxWidth(), decorationBox = { innerTextField -> TextFieldDefaults.TextFieldDecorationBox(innerTextField = innerTextField, label = { Text("Título") }) })
@@ -79,7 +79,7 @@ fun NovelaItem(novela: Novela, onEliminar: (Novela) -> Unit, onFavoritoToggle: (
         .fillMaxWidth()
         .padding(8.dp)
         .clickable { onFavoritoToggle(novela) }) {
-        Text(text = novela.titulo, style = MaterialTheme.typography.h6)
+        Text(text = novela.titulo, style = MaterialTheme.typography.headlineMedium)
         Text(text = "Autor: ${novela.autor}")
         Text(text = "Año: ${novela.anoPublicacion}")
         Text(text = if (novela.esFavorita) "⭐ Favorita" else "No Favorita", style = MaterialTheme.typography.body1)
