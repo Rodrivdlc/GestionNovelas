@@ -11,6 +11,7 @@ Al abrir la aplicación, encontrarás una serie de campos que te permiten añadi
 
 Funciones principales
 1. Agregar una novela
+   
 Para agregar una nueva novela a tu biblioteca:
 
 Completa los siguientes campos en la parte superior de la pantalla:
@@ -19,13 +20,16 @@ Autor: Introduce el nombre del autor o autora.
 Año de Publicación: Introduce el año en que fue publicada la novela (debe ser un número).
 Sinopsis: Escribe una breve descripción o sinopsis de la novela.
 Pulsa el botón Añadir Novela para agregarla a la lista.
+
 2. Lista de novelas
 
 Cada novela añadida mostrará su título, autor, año de publicación y si está marcada como favorita. Además, cada novela tiene dos botones:
 
 Eliminar: Para eliminar la novela de la lista.
 Marcar como Favorita: Para marcar la novela como favorita (o quitarla de favoritos si ya lo está).
+
 3. Ver detalles de una novela
+   
 Para ver más detalles de una novela, haz clic sobre cualquiera de ellas en la lista.
 Se abrirá una ventana emergente con los siguientes detalles:
 Autor: Nombre del autor.
@@ -33,9 +37,13 @@ Año de publicación: Año en que fue publicada.
 Sinopsis: La descripción breve de la novela.
 Favorita: Si está marcada como favorita o no.
 Además, podrás ver las reseñas que hayan sido añadidas a la novela.
+
 4. Añadir una reseña
+   
 En la ventana emergente de detalles de la novela, encontrarás un campo de texto para Agregar una reseña.
 Escribe tu reseña en este campo y pulsa el botón Aceptar.
 Tu reseña será guardada y aparecerá listada debajo del campo de entrada.
-5. Cerrar la ventana de detalles
+
+6. Cerrar la ventana de detalles
+   
 Una vez que hayas revisado los detalles de la novela o añadido una reseña, puedes cerrar la ventana emergente pulsando el botón Cerrar.
