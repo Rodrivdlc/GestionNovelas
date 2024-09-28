@@ -3,13 +3,14 @@ package com.example.feedback1
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,61 +26,88 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun BibliotecaNovelasApp() {
-    var listaNovelas by remember { mutableStateOf(mutableListOf<Novela>()) }
+    var listaNovelas = remember { mutableStateListOf<Novela>() }
+
     var titulo by remember { mutableStateOf(TextFieldValue("")) }
     var autor by remember { mutableStateOf(TextFieldValue("")) }
     var anoPublicacion by remember { mutableStateOf(TextFieldValue("")) }
     var sinopsis by remember { mutableStateOf(TextFieldValue("")) }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = "Biblioteca de Novelas", style = MaterialTheme.typography.headlineSmall)
+    // Fondo gris
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.LightGray)
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Biblioteca de Novelas",
+            style = MaterialTheme.typography.headlineSmall,
+            color = Color.Black
+        )
 
-        // Input fields to add a new novel
+        // Campos para agregar nueva novela
         OutlinedTextField(
             value = titulo,
             onValueChange = { titulo = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Título") }
+            label = { Text("Título") },
+            modifier = Modifier.fillMaxWidth()
         )
+
         OutlinedTextField(
             value = autor,
             onValueChange = { autor = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Autor") }
+            label = { Text("Autor") },
+            modifier = Modifier.fillMaxWidth()
         )
+
         OutlinedTextField(
             value = anoPublicacion,
             onValueChange = { anoPublicacion = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Año de Publicación") }
+            label = { Text("Año de Publicación") },
+            modifier = Modifier.fillMaxWidth()
         )
+
         OutlinedTextField(
             value = sinopsis,
             onValueChange = { sinopsis = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Sinopsis") }
+            label = { Text("Sinopsis") },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = {
-            if (titulo.text.isNotEmpty() && autor.text.isNotEmpty() && anoPublicacion.text.isNotEmpty() && sinopsis.text.isNotEmpty()) {
-                listaNovelas.add(Novela(titulo.text, autor.text, anoPublicacion.text.toInt(), sinopsis.text))
-                titulo = TextFieldValue("")
-                autor = TextFieldValue("")
-                anoPublicacion = TextFieldValue("")
-                sinopsis = TextFieldValue("")
-            }
-        }) {
+        // Botón para añadir una nueva novela con color azul
+        Button(
+            onClick = {
+                if (titulo.text.isNotEmpty() && autor.text.isNotEmpty() && anoPublicacion.text.isNotEmpty() && sinopsis.text.isNotEmpty()) {
+                    val ano = anoPublicacion.text.toIntOrNull()
+                    if (ano != null) {
+                        listaNovelas.add(Novela(titulo.text, autor.text, ano, sinopsis.text))
+                        titulo = TextFieldValue("")
+                        autor = TextFieldValue("")
+                        anoPublicacion = TextFieldValue("")
+                        sinopsis = TextFieldValue("")
+                    }
+                }
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Blue, // Botón azul
+                contentColor = Color.White   // Texto en blanco
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("Añadir Novela")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Lista de novelas
         ListaDeNovelas(listaNovelas, onEliminar = { novela ->
             listaNovelas.remove(novela)
         }, onFavoritoToggle = { novela ->
-            novela.esFavorita = !novela.esFavorita
+            val index = listaNovelas.indexOf(novela)
+            listaNovelas[index] = novela.copy(esFavorita = !novela.esFavorita)
         })
     }
 }
@@ -95,14 +123,19 @@ fun ListaDeNovelas(novelas: List<Novela>, onEliminar: (Novela) -> Unit, onFavori
 
 @Composable
 fun NovelaItem(novela: Novela, onEliminar: (Novela) -> Unit, onFavoritoToggle: (Novela) -> Unit) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp)
-        .clickable { onFavoritoToggle(novela) }) {
-        Text(text = novela.titulo, style = MaterialTheme.typography.headlineMedium)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable { onFavoritoToggle(novela) }
+    ) {
+        Text(text = novela.titulo, style = MaterialTheme.typography.titleLarge)
         Text(text = "Autor: ${novela.autor}")
         Text(text = "Año: ${novela.anoPublicacion}")
-        Text(text = if (novela.esFavorita) "⭐ Favorita" else "No Favorita", style = MaterialTheme.typography.bodyMedium)
+        Text(
+            text = if (novela.esFavorita) "⭐ Favorita" else "No Favorita",
+            style = MaterialTheme.typography.bodyLarge
+        )
 
         Row {
             Button(onClick = { onEliminar(novela) }) {
@@ -121,3 +154,5 @@ fun NovelaItem(novela: Novela, onEliminar: (Novela) -> Unit, onFavoritoToggle: (
 fun DefaultPreview() {
     BibliotecaNovelasApp()
 }
+
+
