@@ -33,6 +33,9 @@ fun BibliotecaNovelasApp() {
     var anoPublicacion by remember { mutableStateOf(TextFieldValue("")) }
     var sinopsis by remember { mutableStateOf(TextFieldValue("")) }
 
+    // Estado para controlar qué novela se está viendo en detalles
+    var novelaSeleccionada by remember { mutableStateOf<Novela?>(null) }
+
     // Fondo gris
     Column(
         modifier = Modifier
@@ -102,32 +105,62 @@ fun BibliotecaNovelasApp() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Lista de novelas
-        ListaDeNovelas(listaNovelas, onEliminar = { novela ->
-            listaNovelas.remove(novela)
-        }, onFavoritoToggle = { novela ->
-            val index = listaNovelas.indexOf(novela)
-            listaNovelas[index] = novela.copy(esFavorita = !novela.esFavorita)
-        })
-    }
-}
+        // Texto indicativo para hacer clic en las novelas
+        Text(
+            text = "Haz clic en la novela para obtener más detalles y ver o añadir reseñas",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Black,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
-@Composable
-fun ListaDeNovelas(novelas: List<Novela>, onEliminar: (Novela) -> Unit, onFavoritoToggle: (Novela) -> Unit) {
-    LazyColumn {
-        items(novelas.size) { index ->
-            NovelaItem(novelas[index], onEliminar, onFavoritoToggle)
+        // Lista de novelas
+        ListaDeNovelas(
+            novelas = listaNovelas,
+            onEliminar = { novela ->
+                listaNovelas.remove(novela)
+            },
+            onFavoritoToggle = { novela ->
+                val index = listaNovelas.indexOf(novela)
+                listaNovelas[index] = novela.copy(esFavorita = !novela.esFavorita)
+            },
+            onVerDetalles = { novela ->
+                novelaSeleccionada = novela
+            }
+        )
+
+        // Mostrar detalles de la novela seleccionada
+        novelaSeleccionada?.let { novela ->
+            DetallesDeNovela(novela = novela, onDismiss = { novelaSeleccionada = null })
         }
     }
 }
 
 @Composable
-fun NovelaItem(novela: Novela, onEliminar: (Novela) -> Unit, onFavoritoToggle: (Novela) -> Unit) {
+fun ListaDeNovelas(
+    novelas: List<Novela>,
+    onEliminar: (Novela) -> Unit,
+    onFavoritoToggle: (Novela) -> Unit,
+    onVerDetalles: (Novela) -> Unit
+) {
+    LazyColumn {
+        items(novelas.size) { index ->
+            NovelaItem(novelas[index], onEliminar, onFavoritoToggle, onVerDetalles)
+        }
+    }
+}
+
+@Composable
+fun NovelaItem(
+    novela: Novela,
+    onEliminar: (Novela) -> Unit,
+    onFavoritoToggle: (Novela) -> Unit,
+    onVerDetalles: (Novela) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { onFavoritoToggle(novela) }
+            .clickable { onVerDetalles(novela) } // Muestra los detalles de la novela
     ) {
         Text(text = novela.titulo, style = MaterialTheme.typography.titleLarge)
         Text(text = "Autor: ${novela.autor}")
@@ -149,10 +182,61 @@ fun NovelaItem(novela: Novela, onEliminar: (Novela) -> Unit, onFavoritoToggle: (
     }
 }
 
+@Composable
+fun DetallesDeNovela(novela: Novela, onDismiss: () -> Unit) {
+    var nuevaReseña by remember { mutableStateOf(TextFieldValue("")) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = "Detalles de ${novela.titulo}")
+        },
+        text = {
+            Column {
+                Text("Autor: ${novela.autor}")
+                Text("Año de publicación: ${novela.anoPublicacion}")
+                Text("Sinopsis: ${novela.sinopsis}")
+                Text("Favorita: ${if (novela.esFavorita) "Sí" else "No"}")
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Text("Reseñas:")
+                for (reseña in novela.reseñas) {
+                    Text("- $reseña")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Campo para agregar una nueva reseña
+                OutlinedTextField(
+                    value = nuevaReseña,
+                    onValueChange = { nuevaReseña = it },
+                    label = { Text("Agregar una reseña") }
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (nuevaReseña.text.isNotEmpty()) {
+                        novela.reseñas.add(nuevaReseña.text)
+                        nuevaReseña = TextFieldValue("") // Limpiar el campo
+                    }
+                    onDismiss()
+                }
+            ) {
+                Text("Aceptar")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cerrar")
+            }
+        }
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     BibliotecaNovelasApp()
 }
-
-
