@@ -44,6 +44,6 @@ En la ventana emergente de detalles de la novela, encontrarás un campo de texto
 Escribe tu reseña en este campo y pulsa el botón Aceptar.
 Tu reseña será guardada y aparecerá listada debajo del campo de entrada.
 
-6. Cerrar la ventana de detalles
+5. Cerrar la ventana de detalles
    
 Una vez que hayas revisado los detalles de la novela o añadido una reseña, puedes cerrar la ventana emergente pulsando el botón Cerrar.
