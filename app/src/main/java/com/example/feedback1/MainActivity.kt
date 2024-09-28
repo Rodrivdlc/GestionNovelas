@@ -35,10 +35,30 @@ fun BibliotecaNovelasApp() {
         Text(text = "Biblioteca de Novelas", style = MaterialTheme.typography.headlineSmall)
 
         // Input fields to add a new novel
-        BasicTextField(value = titulo, onValueChange = { titulo = it }, modifier = Modifier.fillMaxWidth(), decorationBox = { innerTextField -> TextFieldDefaults.TextFieldDecorationBox(innerTextField = innerTextField, label = { Text("Título") }) })
-        BasicTextField(value = autor, onValueChange = { autor = it }, modifier = Modifier.fillMaxWidth(), decorationBox = { innerTextField -> TextFieldDefaults.TextFieldDecorationBox(innerTextField = innerTextField, label = { Text("Autor") }) })
-        BasicTextField(value = anoPublicacion, onValueChange = { anoPublicacion = it }, modifier = Modifier.fillMaxWidth(), decorationBox = { innerTextField -> TextFieldDefaults.TextFieldDecorationBox(innerTextField = innerTextField, label = { Text("Año de Publicación") }) })
-        BasicTextField(value = sinopsis, onValueChange = { sinopsis = it }, modifier = Modifier.fillMaxWidth(), decorationBox = { innerTextField -> TextFieldDefaults.TextFieldDecorationBox(innerTextField = innerTextField, label = { Text("Sinopsis") }) })
+        OutlinedTextField(
+            value = titulo,
+            onValueChange = { titulo = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Título") }
+        )
+        OutlinedTextField(
+            value = autor,
+            onValueChange = { autor = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Autor") }
+        )
+        OutlinedTextField(
+            value = anoPublicacion,
+            onValueChange = { anoPublicacion = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Año de Publicación") }
+        )
+        OutlinedTextField(
+            value = sinopsis,
+            onValueChange = { sinopsis = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Sinopsis") }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
