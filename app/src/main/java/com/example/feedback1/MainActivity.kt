@@ -102,7 +102,7 @@ fun NovelaItem(novela: Novela, onEliminar: (Novela) -> Unit, onFavoritoToggle: (
         Text(text = novela.titulo, style = MaterialTheme.typography.headlineMedium)
         Text(text = "Autor: ${novela.autor}")
         Text(text = "Año: ${novela.anoPublicacion}")
-        Text(text = if (novela.esFavorita) "⭐ Favorita" else "No Favorita", style = MaterialTheme.typography.body1)
+        Text(text = if (novela.esFavorita) "⭐ Favorita" else "No Favorita", style = MaterialTheme.typography.bodyMedium)
 
         Row {
             Button(onClick = { onEliminar(novela) }) {
