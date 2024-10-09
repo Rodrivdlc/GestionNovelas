@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "30036785006",
+    "project_id": "feedback2-c4a03",
+    "storage_bucket": "feedback2-c4a03.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:30036785006:android:313991b768e9f5148a337f",
+        "android_client_info": {
+          "package_name": "com.example.novelas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJAEub18l8E0duVEejqh6qtbI5OYRMX5Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
