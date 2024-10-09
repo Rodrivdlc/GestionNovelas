@@ -1,4 +1,4 @@
-package com.example.feedback1.ui.theme
+package com.example.novelas.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

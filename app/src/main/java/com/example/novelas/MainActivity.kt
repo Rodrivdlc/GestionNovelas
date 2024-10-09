@@ -1,4 +1,4 @@
-package com.example.feedback1
+package com.example.novelas
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

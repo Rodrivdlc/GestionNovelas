@@ -1,4 +1,4 @@
-package com.example.feedback1
+package com.example.novelas
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

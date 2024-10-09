@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.feedback1"
+    namespace = "com.example.novelas"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.feedback1"
+        applicationId = "com.example.novelas"
         minSdk = 22
         targetSdk = 34
         versionCode = 1
