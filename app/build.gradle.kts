@@ -51,7 +51,6 @@ android {
 }
 
 dependencies {
-    implementation("com.google.firebase:firebase-database-ktx:20.0.5")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
