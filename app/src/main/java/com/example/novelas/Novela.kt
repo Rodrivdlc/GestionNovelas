@@ -8,4 +8,3 @@ data class Novela(
     var esFavorita: Boolean = false,
     val reseñas: MutableList<String> = mutableListOf()
 )
-
