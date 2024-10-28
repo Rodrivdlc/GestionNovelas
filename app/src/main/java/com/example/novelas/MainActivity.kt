@@ -28,6 +28,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import com.example.novelas.ui.theme.Feedback1Theme
 
 
 class MainActivity : ComponentActivity() {
@@ -37,20 +38,27 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Cargar la preferencia de tema desde SharedPreferences
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val isDarkTheme = sharedPreferences.getBoolean("dark_theme", false)
+
         setContent {
-            val navController = rememberNavController()
-            NavHost(navController, startDestination = "login") {
-                composable("login") {
-                    LoginScreen(
-                        onLoginSuccess = { navController.navigate("main") },
-                        onRegisterClick = { navController.navigate("register") }
-                    )
-                }
-                composable("register") {
-                    RegisterScreen(onRegisterSuccess = { navController.popBackStack() })
-                }
-                composable("main") {
-                    BibliotecaNovelasApp()
+            Feedback1Theme(darkTheme = isDarkTheme) {  // Aplicar el tema guardado
+                val navController = rememberNavController()
+                NavHost(navController, startDestination = "login") {
+                    composable("login") {
+                        LoginScreen(
+                            onLoginSuccess = { navController.navigate("main") },
+                            onRegisterClick = { navController.navigate("register") }
+                        )
+                    }
+                    composable("register") {
+                        RegisterScreen(onRegisterSuccess = { navController.popBackStack() })
+                    }
+                    composable("main") {
+                        BibliotecaNovelasApp()
+                    }
                 }
             }
         }
@@ -259,55 +267,100 @@ class MainActivity : ComponentActivity() {
     }
     // Pantalla de login integrada
     @Composable
-    fun LoginScreen(onLoginSuccess: () -> Unit, onRegisterClick: () -> Unit) {
+    fun LoginScreen(
+        onLoginSuccess: () -> Unit,
+        onRegisterClick: () -> Unit
+    ) {
         var username by remember { mutableStateOf(TextFieldValue("")) }
         var password by remember { mutableStateOf(TextFieldValue("")) }
+        var isDarkTheme by remember { mutableStateOf(false) }
         val context = LocalContext.current
 
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Iniciar Sesión", style = MaterialTheme.typography.headlineSmall)
+        // Cargar preferencia del tema
+        LaunchedEffect(Unit) {
+            val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            isDarkTheme = sharedPreferences.getBoolean("dark_theme", false)
+        }
 
-            OutlinedTextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { Text("Usuario") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Contraseña") },
-                modifier = Modifier.fillMaxWidth(),
-                visualTransformation = PasswordVisualTransformation()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                    val savedUsername = sharedPreferences.getString("username", null)
-                    val savedPassword = sharedPreferences.getString("password", null)
-
-                    if (username.text == savedUsername && password.text == savedPassword) {
-                        onLoginSuccess() // Navegar a la pantalla principal
-                    } else {
-                        Toast.makeText(context, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
+        Feedback1Theme(darkTheme = isDarkTheme) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
             ) {
-                Text("Iniciar Sesión")
-            }
+                Text(
+                    text = "Iniciar Sesión",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
 
-            Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    label = { Text("Usuario") },
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onBackground)
+                )
 
-            TextButton(onClick = onRegisterClick) {
-                Text("Registrarse")
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Contraseña") },
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = PasswordVisualTransformation(),
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onBackground)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                        val savedUsername = sharedPreferences.getString("username", null)
+                        val savedPassword = sharedPreferences.getString("password", null)
+
+                        if (username.text == savedUsername && password.text == savedPassword) {
+                            onLoginSuccess() // Navegar a la pantalla principal
+                        } else {
+                            Toast.makeText(context, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Iniciar Sesión")
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextButton(onClick = onRegisterClick) {
+                    Text("Registrarse")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Tema oscuro",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Switch(
+                        checked = isDarkTheme,
+                        onCheckedChange = { isChecked ->
+                            isDarkTheme = isChecked
+                            // Guardar el tema en SharedPreferences
+                            val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                            sharedPreferences.edit().putBoolean("dark_theme", isDarkTheme).apply()
+                        }
+                    )
+                }
             }
         }
     }
+
 
     // Pantalla de registro integrada
     @Composable
