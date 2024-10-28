@@ -1,6 +1,9 @@
 package com.example.novelas
 
+
+import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -20,6 +23,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+
 
 class MainActivity : ComponentActivity() {
     private val databaseUrl = "https://feedback2-c4a03-default-rtdb.europe-west1.firebasedatabase.app/"
@@ -29,10 +38,23 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BibliotecaNovelasApp()
+            val navController = rememberNavController()
+            NavHost(navController, startDestination = "login") {
+                composable("login") {
+                    LoginScreen(
+                        onLoginSuccess = { navController.navigate("main") },
+                        onRegisterClick = { navController.navigate("register") }
+                    )
+                }
+                composable("register") {
+                    RegisterScreen(onRegisterSuccess = { navController.popBackStack() })
+                }
+                composable("main") {
+                    BibliotecaNovelasApp()
+                }
+            }
         }
     }
-
     @Composable
     fun ListaDeNovelas(
         novelas: List<Novela>,
@@ -232,6 +254,102 @@ class MainActivity : ComponentActivity() {
             // Mostrar detalles de la novela seleccionada
             novelaSeleccionada?.let { novela ->
                 DetallesDeNovela(novela = novela, onDismiss = { novelaSeleccionada = null })
+            }
+        }
+    }
+    // Pantalla de login integrada
+    @Composable
+    fun LoginScreen(onLoginSuccess: () -> Unit, onRegisterClick: () -> Unit) {
+        var username by remember { mutableStateOf(TextFieldValue("")) }
+        var password by remember { mutableStateOf(TextFieldValue("")) }
+        val context = LocalContext.current
+
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = "Iniciar Sesión", style = MaterialTheme.typography.headlineSmall)
+
+            OutlinedTextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Usuario") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Contraseña") },
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                    val savedUsername = sharedPreferences.getString("username", null)
+                    val savedPassword = sharedPreferences.getString("password", null)
+
+                    if (username.text == savedUsername && password.text == savedPassword) {
+                        onLoginSuccess() // Navegar a la pantalla principal
+                    } else {
+                        Toast.makeText(context, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Iniciar Sesión")
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            TextButton(onClick = onRegisterClick) {
+                Text("Registrarse")
+            }
+        }
+    }
+
+    // Pantalla de registro integrada
+    @Composable
+    fun RegisterScreen(onRegisterSuccess: () -> Unit) {
+        var username by remember { mutableStateOf(TextFieldValue("")) }
+        var password by remember { mutableStateOf(TextFieldValue("")) }
+        val context = LocalContext.current
+
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = "Registro", style = MaterialTheme.typography.headlineSmall)
+
+            OutlinedTextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Usuario") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Contraseña") },
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+                    sharedPreferences.edit().apply {
+                        putString("username", username.text)
+                        putString("password", password.text)
+                        apply()
+                    }
+                    onRegisterSuccess() // Navegar de regreso a la pantalla de login
+                    Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Registrar")
             }
         }
     }
