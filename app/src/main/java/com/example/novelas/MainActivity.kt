@@ -28,23 +28,30 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.room.Room
 import com.example.novelas.ui.theme.Feedback1Theme
+import kotlinx.coroutines.launch
+
 
 
 class MainActivity : ComponentActivity() {
-    private val databaseUrl = "https://feedback2-c4a03-default-rtdb.europe-west1.firebasedatabase.app/"
-    private val database = Firebase.database(databaseUrl)
-    private val novelasRef = database.getReference("novelas")
+    private lateinit var database: NovelaDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Inicializar la base de datos de Room
+        database = Room.databaseBuilder(
+            applicationContext,
+            NovelaDatabase::class.java, "novela_database"
+        ).build()
 
         // Cargar la preferencia de tema desde SharedPreferences
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val isDarkTheme = sharedPreferences.getBoolean("dark_theme", false)
 
         setContent {
-            Feedback1Theme(darkTheme = isDarkTheme) {  // Aplicar el tema guardado
+            Feedback1Theme(darkTheme = isDarkTheme) {
                 val navController = rememberNavController()
                 NavHost(navController, startDestination = "login") {
                     composable("login") {
@@ -57,40 +64,7 @@ class MainActivity : ComponentActivity() {
                         RegisterScreen(onRegisterSuccess = { navController.popBackStack() })
                     }
                     composable("main") {
-                        BibliotecaNovelasApp()
-                    }
-                }
-            }
-        }
-    }
-    @Composable
-    fun ListaDeNovelas(
-        novelas: List<Novela>,
-        onEliminar: (Novela) -> Unit,
-        onFavoritoToggle: (Novela) -> Unit,
-        onVerDetalles: (Novela) -> Unit
-    ) {
-        LazyColumn {
-            items(novelas) { novela ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable { onVerDetalles(novela) }
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(text = novela.titulo, style = MaterialTheme.typography.bodyLarge)
-                        Text(text = "Autor: ${novela.autor}", style = MaterialTheme.typography.bodyMedium)
-                        Text(text = "Año: ${novela.anoPublicacion}", style = MaterialTheme.typography.bodyMedium)
-                    }
-                    IconButton(onClick = { onFavoritoToggle(novela) }) {
-                        Icon(
-                            imageVector = if (novela.esFavorita) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = "Toggle Favorite"
-                        )
-                    }
-                    IconButton(onClick = { onEliminar(novela) }) {
-                        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Eliminar novela")
+                        BibliotecaNovelasApp(database = database)
                     }
                 }
             }
@@ -98,81 +72,32 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun DetallesDeNovela(novela: Novela, onDismiss: () -> Unit) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = { Text(text = novela.titulo) },
-            text = {
-                Column {
-                    Text(text = "Autor: ${novela.autor}")
-                    Text(text = "Año de Publicación: ${novela.anoPublicacion}")
-                    Text(text = "Sinopsis: ${novela.sinopsis}")
-                    Text(text = "Favorita: ${if (novela.esFavorita) "Sí" else "No"}")
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = "Reseñas:")
-                    novela.reseñas.forEach { reseña ->
-                        Text(text = reseña, style = MaterialTheme.typography.bodyMedium)
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    var nuevaReseña by remember { mutableStateOf(TextFieldValue("")) }
-                    OutlinedTextField(
-                        value = nuevaReseña,
-                        onValueChange = { nuevaReseña = it },
-                        label = { Text("Agregar una reseña") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Button(
-                        onClick = {
-                            if (nuevaReseña.text.isNotEmpty()) {
-                                novela.reseñas.add(nuevaReseña.text)
-                                nuevaReseña = TextFieldValue("")
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Aceptar")
-                    }
-                }
-            },
-            confirmButton = {
-                Button(onClick = onDismiss) {
-                    Text("Cerrar")
-                }
-            }
-        )
-    }
+    fun BibliotecaNovelasApp(database: NovelaDatabase) {
+        val context = LocalContext.current
+        val scope = rememberCoroutineScope()
 
-    @Composable
-    fun BibliotecaNovelasApp() {
-        var listaNovelas by remember { mutableStateOf(listOf<Novela>()) }
-
+        var listaNovelas by remember { mutableStateOf(listOf<NovelaEntity>()) }
         var titulo by remember { mutableStateOf(TextFieldValue("")) }
         var autor by remember { mutableStateOf(TextFieldValue("")) }
         var anoPublicacion by remember { mutableStateOf(TextFieldValue("")) }
         var sinopsis by remember { mutableStateOf(TextFieldValue("")) }
+        var novelaSeleccionada by remember { mutableStateOf<NovelaEntity?>(null) }
 
-        // Estado para controlar qué novela se está viendo en detalles
-        var novelaSeleccionada by remember { mutableStateOf<Novela?>(null) }
-
-        // Leer datos desde Firebase
+        // Leer datos desde SQLite al iniciar
         LaunchedEffect(Unit) {
-            novelasRef.get().addOnSuccessListener { snapshot ->
-                val novelasList = snapshot.children.mapNotNull { it.getValue(Novela::class.java) }
-                listaNovelas = novelasList
-            }
+            listaNovelas = database.novelaDao().getAllNovelas()
         }
 
-        // Fondo gris
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.LightGray)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp)
         ) {
             Text(
                 text = "Biblioteca de Novelas",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             // Campos para agregar nueva novela
@@ -206,26 +131,36 @@ class MainActivity : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón para añadir una nueva novela con color azul
+            // Botón para añadir nueva novela
             Button(
                 onClick = {
                     if (titulo.text.isNotEmpty() && autor.text.isNotEmpty() && anoPublicacion.text.isNotEmpty() && sinopsis.text.isNotEmpty()) {
                         val ano = anoPublicacion.text.toIntOrNull()
                         if (ano != null) {
-                            val nuevaNovela = Novela(titulo.text, autor.text, ano, sinopsis.text)
-                            novelasRef.push().setValue(nuevaNovela)
-                            listaNovelas = listaNovelas + nuevaNovela
+                            val nuevaNovela = NovelaEntity(
+                                titulo = titulo.text,
+                                autor = autor.text,
+                                anoPublicacion = ano,
+                                sinopsis = sinopsis.text,
+                                esFavorita = false
+                            )
+
+                            // Insertar la novela en la base de datos y actualizar la lista
+                            scope.launch {
+                                database.novelaDao().insertNovela(nuevaNovela)
+                                listaNovelas = database.novelaDao().getAllNovelas() // Actualizar la lista de novelas
+                            }
+
+                            // Limpiar campos después de agregar la novela
                             titulo = TextFieldValue("")
                             autor = TextFieldValue("")
                             anoPublicacion = TextFieldValue("")
                             sinopsis = TextFieldValue("")
+                        } else {
+                            Toast.makeText(context, "Año de publicación inválido", Toast.LENGTH_SHORT).show()
                         }
                     }
                 },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Blue, // Botón azul
-                    contentColor = Color.White   // Texto en blanco
-                ),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Añadir Novela")
@@ -233,31 +168,30 @@ class MainActivity : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Texto indicativo para hacer clic en las novelas
-            Text(
-                text = "Haz clic en la novela para obtener más detalles y ver o añadir reseñas",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Black,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            // Lista de novelas
-            ListaDeNovelas(
-                novelas = listaNovelas,
-                onEliminar = { novela ->
-                    novelasRef.child(novela.titulo).removeValue()
-                    listaNovelas = listaNovelas - novela
-                },
-                onFavoritoToggle = { novela ->
-                    val index = listaNovelas.indexOf(novela)
-                    val updatedNovela = novela.copy(esFavorita = !novela.esFavorita)
-                    listaNovelas = listaNovelas.toMutableList().apply { set(index, updatedNovela) }
-                    novelasRef.child(novela.titulo).setValue(updatedNovela)
-                },
-                onVerDetalles = { novela ->
-                    novelaSeleccionada = novela
+            LazyColumn {
+                items(listaNovelas) { novela ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .clickable { novelaSeleccionada = novela }
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(text = novela.titulo, style = MaterialTheme.typography.bodyLarge)
+                            Text(text = "Autor: ${novela.autor}", style = MaterialTheme.typography.bodyMedium)
+                            Text(text = "Año: ${novela.anoPublicacion}", style = MaterialTheme.typography.bodyMedium)
+                        }
+                        IconButton(onClick = {
+                            scope.launch {
+                                database.novelaDao().deleteNovela(novela.titulo)
+                                listaNovelas = database.novelaDao().getAllNovelas()
+                            }
+                        }) {
+                            Icon(imageVector = Icons.Filled.Delete, contentDescription = "Eliminar novela")
+                        }
+                    }
                 }
-            )
+            }
 
             // Mostrar detalles de la novela seleccionada
             novelaSeleccionada?.let { novela ->
@@ -265,18 +199,35 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    // Pantalla de login integrada
+
     @Composable
-    fun LoginScreen(
-        onLoginSuccess: () -> Unit,
-        onRegisterClick: () -> Unit
-    ) {
+    fun DetallesDeNovela(novela: NovelaEntity, onDismiss: () -> Unit) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(text = novela.titulo) },
+            text = {
+                Column {
+                    Text(text = "Autor: ${novela.autor}")
+                    Text(text = "Año de Publicación: ${novela.anoPublicacion}")
+                    Text(text = "Sinopsis: ${novela.sinopsis}")
+                    Text(text = "Favorita: ${if (novela.esFavorita) "Sí" else "No"}")
+                }
+            },
+            confirmButton = {
+                Button(onClick = onDismiss) {
+                    Text("Cerrar")
+                }
+            }
+        )
+    }
+
+    @Composable
+    fun LoginScreen(onLoginSuccess: () -> Unit, onRegisterClick: () -> Unit) {
         var username by remember { mutableStateOf(TextFieldValue("")) }
         var password by remember { mutableStateOf(TextFieldValue("")) }
         var isDarkTheme by remember { mutableStateOf(false) }
         val context = LocalContext.current
 
-        // Cargar preferencia del tema
         LaunchedEffect(Unit) {
             val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             isDarkTheme = sharedPreferences.getBoolean("dark_theme", false)
@@ -299,8 +250,7 @@ class MainActivity : ComponentActivity() {
                     value = username,
                     onValueChange = { username = it },
                     label = { Text("Usuario") },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onBackground)
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 OutlinedTextField(
@@ -308,8 +258,7 @@ class MainActivity : ComponentActivity() {
                     onValueChange = { password = it },
                     label = { Text("Contraseña") },
                     modifier = Modifier.fillMaxWidth(),
-                    visualTransformation = PasswordVisualTransformation(),
-                    textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onBackground)
+                    visualTransformation = PasswordVisualTransformation()
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -321,7 +270,7 @@ class MainActivity : ComponentActivity() {
                         val savedPassword = sharedPreferences.getString("password", null)
 
                         if (username.text == savedUsername && password.text == savedPassword) {
-                            onLoginSuccess() // Navegar a la pantalla principal
+                            onLoginSuccess()
                         } else {
                             Toast.makeText(context, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
                         }
@@ -351,7 +300,6 @@ class MainActivity : ComponentActivity() {
                         checked = isDarkTheme,
                         onCheckedChange = { isChecked ->
                             isDarkTheme = isChecked
-                            // Guardar el tema en SharedPreferences
                             val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
                             sharedPreferences.edit().putBoolean("dark_theme", isDarkTheme).apply()
                         }
@@ -361,8 +309,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
-    // Pantalla de registro integrada
     @Composable
     fun RegisterScreen(onRegisterSuccess: () -> Unit) {
         var username by remember { mutableStateOf(TextFieldValue("")) }
@@ -397,7 +343,7 @@ class MainActivity : ComponentActivity() {
                         putString("password", password.text)
                         apply()
                     }
-                    onRegisterSuccess() // Navegar de regreso a la pantalla de login
+                    onRegisterSuccess()
                     Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.fillMaxWidth()
