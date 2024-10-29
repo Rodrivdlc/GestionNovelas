@@ -5,6 +5,7 @@ plugins {
     //alias(libs.plugins.kotlin.kapt)
     kotlin("kapt")
 
+
 }
 
 android {
@@ -73,6 +74,7 @@ dependencies {
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler) // Use kapt for Room compiler
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
