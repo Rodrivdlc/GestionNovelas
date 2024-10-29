@@ -2,7 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
-    id("org.jetbrains.kotlin.kapt") // Ensure the Kapt plugin is applied
+    //alias(libs.plugins.kotlin.kapt)
+    kotlin("kapt")
+
 }
 
 android {
@@ -79,10 +81,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-}
-
-kapt {
-    arguments {
-        arg("kapt.kotlin.generated", file("build/generated/source/kaptKotlin"))
-    }
 }
