@@ -23,6 +23,8 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 
 class MainActivity : ComponentActivity() {
     private lateinit var dbHelper: DatabaseHelper
+    private lateinit var preferencesManager: PreferencesManager
+
     private val databaseUrl = "https://feedback2-c4a03-default-rtdb.europe-west1.firebasedatabase.app/"
     private val database = Firebase.database(databaseUrl)
     private val novelasRef = database.getReference("novelas")
@@ -30,6 +32,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         dbHelper = DatabaseHelper(this)
+        preferencesManager = PreferencesManager(this)  // Inicializar PreferencesManager
+
 
         setContent {
             var isLoggedIn by remember { mutableStateOf(false) }
@@ -43,7 +47,7 @@ class MainActivity : ComponentActivity() {
                         showRegister = false  // Vuelve a la pantalla de login tras registrarse
                     }
                 } else {
-                    LoginScreen(dbHelper, onLoginExitoso = { isLoggedIn = true }) {
+                    LoginScreen(dbHelper, preferencesManager, onLoginExitoso = { isLoggedIn = true }) {
                         showRegister = true  // Muestra la pantalla de registro
                     }
                 }
