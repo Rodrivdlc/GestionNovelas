@@ -26,7 +26,8 @@ Ver y Editar Detalles de Novelas: Los usuarios pueden ver detalles completos de 
 Favoritos: Permite marcar novelas como favoritas para identificarlas fácilmente en la biblioteca.
 Cambio de Color de Fondo en Pantalla de Login: Los usuarios pueden cambiar el color de fondo de la pantalla de inicio de sesión y la preferencia se guarda usando SharedPreferences.
 
-Manual de uso de la aplicación "Biblioteca de Novelas"
+## Manual de uso de la aplicación "Biblioteca de Novelas"
+
 Descripción de la aplicación
 La aplicación "Biblioteca de Novelas" permite gestionar una lista personal de novelas, permitiendo al usuario agregar nuevas novelas, eliminarlas, marcarlas como favoritas y ver detalles adicionales, incluidas reseñas. La interfaz es sencilla y fácil de usar.
 
