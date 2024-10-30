@@ -56,6 +56,68 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    @Composable
+    fun DetallesDeNovela(novela: Novela, onDismiss: () -> Unit) {
+        var nuevaReseña by remember { mutableStateOf(TextFieldValue("")) }
+        var isFavorita by remember { mutableStateOf(novela.esFavorita) } // Estado para el botón de favorito
+
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(text = novela.titulo) },
+            text = {
+                Column {
+                    Text(text = "Autor: ${novela.autor}")
+                    Text(text = "Año de Publicación: ${novela.anoPublicacion}")
+                    Text(text = "Sinopsis: ${novela.sinopsis}")
+
+                    // Botón para alternar el estado de favorito
+                    Button(
+                        onClick = {
+                            isFavorita = !isFavorita
+                            novela.esFavorita = isFavorita // Actualiza el estado de favorito en la novela
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(if (isFavorita) "Quitar de Favoritos" else "Añadir a Favoritos")
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = "Reseñas:")
+                    novela.reseñas.forEach { reseña ->
+                        Text(text = reseña, style = MaterialTheme.typography.bodyMedium)
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Campo de texto para agregar una nueva reseña
+                    OutlinedTextField(
+                        value = nuevaReseña,
+                        onValueChange = { nuevaReseña = it },
+                        label = { Text("Agregar una reseña") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Button(
+                        onClick = {
+                            if (nuevaReseña.text.isNotEmpty()) {
+                                novela.reseñas.add(nuevaReseña.text)
+                                nuevaReseña = TextFieldValue("")
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Aceptar")
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = onDismiss) {
+                    Text("Cerrar")
+                }
+            }
+        )
+    }
+
+
 
     @Composable
     fun BibliotecaNovelasApp() {
@@ -64,6 +126,7 @@ class MainActivity : ComponentActivity() {
         var autor by remember { mutableStateOf(TextFieldValue("")) }
         var anoPublicacion by remember { mutableStateOf(TextFieldValue("")) }
         var sinopsis by remember { mutableStateOf(TextFieldValue("")) }
+        var novelaSeleccionada by remember { mutableStateOf<Novela?>(null) }
 
         // Cargar datos desde Firebase
         LaunchedEffect(Unit) {
@@ -85,7 +148,7 @@ class MainActivity : ComponentActivity() {
                 color = Color.Black
             )
 
-            // Campos para agregar una nueva novela
+            // Campos para agregar nueva novela
             OutlinedTextField(
                 value = titulo,
                 onValueChange = { titulo = it },
@@ -113,7 +176,7 @@ class MainActivity : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón para añadir novela
+            // Botón para añadir una novela
             Button(
                 onClick = {
                     if (titulo.text.isNotEmpty() && autor.text.isNotEmpty() && anoPublicacion.text.isNotEmpty() && sinopsis.text.isNotEmpty()) {
@@ -143,7 +206,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
-                            .clickable { }
+                            .clickable { novelaSeleccionada = novela }
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(text = novela.titulo, style = MaterialTheme.typography.bodyLarge)
@@ -153,8 +216,14 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+
+            // Mostrar los detalles de la novela seleccionada
+            novelaSeleccionada?.let { novela ->
+                DetallesDeNovela(novela = novela, onDismiss = { novelaSeleccionada = null })
+            }
         }
     }
+
 
     @Composable
     fun LoginScreen(onLoginSuccess: () -> Unit, onRegisterClick: () -> Unit) {
