@@ -10,7 +10,8 @@ Biblioteca de Novelas es una aplicación de Android para gestionar una colecció
 
 Almacena y sincroniza en tiempo real los datos de las novelas.
 Permite que cada novela se guarde con sus detalles (título, autor, año de publicación, sinopsis, estado de favorito y reseñas) y actualiza los cambios instantáneamente para todos los usuarios conectados.
-##📂 SQLite
+
+## 📂 SQLite
 
 Gestiona la autenticación de usuarios.
 Permite registrar e iniciar sesión de usuarios con nombre y contraseña, almacenando estos datos en una base de datos local en el dispositivo.
