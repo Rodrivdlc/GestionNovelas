@@ -1,6 +1,29 @@
-En este repositorio se resuelve el Feedback 1: Aplicación de gestión de novelas.
+## Gestion Novelas
 https://github.com/Rodrivdlc/Feedback1.git
 
+## Descripción
+Biblioteca de Novelas es una aplicación de Android para gestionar una colección de novelas. Los usuarios pueden registrarse, iniciar sesión y mantener un registro de sus novelas favoritas, incluyendo información detallada como el título, autor, año de publicación y sinopsis. Cada novela puede ser marcada como favorita y recibir reseñas de los usuarios. La app utiliza Firebase Realtime Database para almacenar la información de las novelas, SQLite para gestionar las credenciales de usuario, y SharedPreferences para guardar las preferencias de personalización, como el color de fondo en la pantalla de inicio de sesión.
+
+## Tecnologías Usadas
+
+## 🔥 Firebase Realtime Database 
+
+Almacena y sincroniza en tiempo real los datos de las novelas.
+Permite que cada novela se guarde con sus detalles (título, autor, año de publicación, sinopsis, estado de favorito y reseñas) y actualiza los cambios instantáneamente para todos los usuarios conectados.
+##📂 SQLite
+
+Gestiona la autenticación de usuarios.
+Permite registrar e iniciar sesión de usuarios con nombre y contraseña, almacenando estos datos en una base de datos local en el dispositivo.
+
+## ⚙️ SharedPreferences
+
+Almacena la preferencia del color de fondo de la pantalla de inicio de sesión, permitiendo a los usuarios personalizar la interfaz de la aplicación y guardar estas preferencias de manera persistente.
+Funcionalidades
+Registro e Inicio de Sesión: Los usuarios pueden crear una cuenta con su nombre y contraseña, almacenados en SQLite, y acceder a su biblioteca de novelas.
+Agregar Novelas: Permite agregar nuevas novelas a la biblioteca proporcionando título, autor, año de publicación y sinopsis.
+Ver y Editar Detalles de Novelas: Los usuarios pueden ver detalles completos de cada novela, añadir o modificar sus reseñas y cambiar el estado de favorito.
+Favoritos: Permite marcar novelas como favoritas para identificarlas fácilmente en la biblioteca.
+Cambio de Color de Fondo en Pantalla de Login: Los usuarios pueden cambiar el color de fondo de la pantalla de inicio de sesión y la preferencia se guarda usando SharedPreferences.
 
 Manual de uso de la aplicación "Biblioteca de Novelas"
 Descripción de la aplicación
