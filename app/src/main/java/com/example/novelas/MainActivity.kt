@@ -22,14 +22,32 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 
 class MainActivity : ComponentActivity() {
+    private lateinit var dbHelper: DatabaseHelper
     private val databaseUrl = "https://feedback2-c4a03-default-rtdb.europe-west1.firebasedatabase.app/"
     private val database = Firebase.database(databaseUrl)
     private val novelasRef = database.getReference("novelas")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        dbHelper = DatabaseHelper(this)
+
         setContent {
-            BibliotecaNovelasApp()
+            var isLoggedIn by remember { mutableStateOf(false) }
+            var showRegister by remember { mutableStateOf(false) }
+
+            if (isLoggedIn) {
+                BibliotecaNovelasApp()
+            } else {
+                if (showRegister) {
+                    RegistroScreen(dbHelper) {
+                        showRegister = false  // Vuelve a la pantalla de login tras registrarse
+                    }
+                } else {
+                    LoginScreen(dbHelper, onLoginExitoso = { isLoggedIn = true }) {
+                        showRegister = true  // Muestra la pantalla de registro
+                    }
+                }
+            }
         }
     }
 
@@ -115,16 +133,12 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun BibliotecaNovelasApp() {
         var listaNovelas by remember { mutableStateOf(listOf<Novela>()) }
-
         var titulo by remember { mutableStateOf(TextFieldValue("")) }
         var autor by remember { mutableStateOf(TextFieldValue("")) }
         var anoPublicacion by remember { mutableStateOf(TextFieldValue("")) }
         var sinopsis by remember { mutableStateOf(TextFieldValue("")) }
-
-        // Estado para controlar qué novela se está viendo en detalles
         var novelaSeleccionada by remember { mutableStateOf<Novela?>(null) }
 
-        // Leer datos desde Firebase
         LaunchedEffect(Unit) {
             novelasRef.get().addOnSuccessListener { snapshot ->
                 val novelasList = snapshot.children.mapNotNull { it.getValue(Novela::class.java) }
@@ -132,7 +146,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Fondo gris
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -145,7 +158,6 @@ class MainActivity : ComponentActivity() {
                 color = Color.Black
             )
 
-            // Campos para agregar nueva novela
             OutlinedTextField(
                 value = titulo,
                 onValueChange = { titulo = it },
@@ -176,7 +188,6 @@ class MainActivity : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón para añadir una nueva novela con color azul
             Button(
                 onClick = {
                     if (titulo.text.isNotEmpty() && autor.text.isNotEmpty() && anoPublicacion.text.isNotEmpty() && sinopsis.text.isNotEmpty()) {
@@ -193,8 +204,8 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Blue, // Botón azul
-                    contentColor = Color.White   // Texto en blanco
+                    containerColor = Color.Blue,
+                    contentColor = Color.White
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -203,7 +214,6 @@ class MainActivity : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Texto indicativo para hacer clic en las novelas
             Text(
                 text = "Haz clic en la novela para obtener más detalles y ver o añadir reseñas",
                 style = MaterialTheme.typography.bodyMedium,
@@ -211,7 +221,6 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            // Lista de novelas
             ListaDeNovelas(
                 novelas = listaNovelas,
                 onEliminar = { novela ->
@@ -229,7 +238,6 @@ class MainActivity : ComponentActivity() {
                 }
             )
 
-            // Mostrar detalles de la novela seleccionada
             novelaSeleccionada?.let { novela ->
                 DetallesDeNovela(novela = novela, onDismiss = { novelaSeleccionada = null })
             }
