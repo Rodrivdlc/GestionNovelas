@@ -2,8 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
-    //alias(libs.plugins.kotlin.kapt)
-    kotlin("kapt")
+
 
 
 }
@@ -70,10 +69,7 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.androidx.navigation.compose)
 
-    // Room dependencies
-    implementation(libs.androidx.room.common)
-    implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler) // Use kapt for Room compiler
+
 
 
     testImplementation(libs.junit)
