@@ -2,6 +2,10 @@
 
 https://github.com/Rodrivdlc/GestionNovelas.git
 
+
+## Importante
+Esta es una app que se va actualizando por cada Feeback pero por problemas de compatibilidad en el Feedback 4 Aplicación de Gestión de Novelas con Fragmentos y Widgets , el codigo de del feedback 4 se encuentra en la rama Fragmentos-Widgets
+
 ## Descripción
 Biblioteca de Novelas es una aplicación de Android para gestionar una colección de novelas. Los usuarios pueden registrarse, iniciar sesión y mantener un registro de sus novelas favoritas, incluyendo información detallada como el título, autor, año de publicación y sinopsis. Cada novela puede ser marcada como favorita y recibir reseñas de los usuarios. La app utiliza Firebase Realtime Database para almacenar la información de las novelas, SQLite para gestionar las credenciales de usuario, y SharedPreferences para guardar las preferencias de personalización, como el color de fondo en la pantalla de inicio de sesión.
 
