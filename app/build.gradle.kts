@@ -68,6 +68,9 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.0.0")
     implementation(libs.firebase.database)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.ui.test.android)
 
 
 
