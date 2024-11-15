@@ -32,8 +32,14 @@ class NovelasListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // Populate with sample data
         val sampleNovelas = listOf(
-            Novela("Title 1", "Author 1", 2021, "Synopsis 1"),
-            Novela("Title 2", "Author 2", 2022, "Synopsis 2")
+            Novela("Title 1", "Rodri", 2021, "Synopsis 1"),
+            Novela("Title 2", "PEPE", 2022, "Synopsis 2"),
+            Novela("Title 2", "sanchez", 1222, "Synopsis 3"),
+            Novela("Title 2", "cervantes", 1999, "Synopsis 3"),
+            Novela("Title 2", "bob", 1995, "Synopsis 3")
+
+
+
         )
         updateNovelas(sampleNovelas)
     }
