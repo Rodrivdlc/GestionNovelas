@@ -33,7 +33,9 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             put(COLUMN_USERNAME, nombre)
             put(COLUMN_PASSWORD, contrasena)
         }
-        return db.insert(TABLE_USERS, null, values) != -1L
+        val result = db.insert(TABLE_USERS, null, values)
+        db.close() // Cerrar la base de datos
+        return result != -1L
     }
 
     fun autenticarUsuario(nombre: String, contrasena: String): Boolean {
@@ -46,7 +48,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             null, null, null
         )
         val autenticado = cursor.count > 0
-        cursor.close()
+        cursor.close() // Cerrar el cursor
+        db.close() // Cerrar la base de datos
         return autenticado
     }
 }

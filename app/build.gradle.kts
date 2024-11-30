@@ -68,7 +68,8 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.0.0")
     implementation(libs.firebase.database)
     implementation(libs.androidx.navigation.compose)
-
+    implementation(libs.androidx.runner)
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
 
 
 

@@ -11,6 +11,7 @@ composeBom = "2024.04.01"
 googleGmsGoogleServices = "4.4.2"
 firebaseDatabase = "21.0.0"
 navigationCompose = "2.8.3"
+runner = "1.6.1"
 
 
 [libraries]
@@ -30,6 +31,7 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 
 
 [plugins]
