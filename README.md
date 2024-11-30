@@ -3,8 +3,26 @@
 https://github.com/Rodrivdlc/GestionNovelas.git
 
 
-## Importante
-Esta es una app que se va actualizando por cada Feeback pero por problemas de compatibilidad en el Feedback 4 Aplicación de Gestión de Novelas con Fragmentos y Widgets , el codigo de del feedback 4 se encuentra en la rama Fragmentos-Widgets
+##Ultima actualización: Feedback 5:
+Después de implementar las mejoras indicadas en el enunciado, realicé pruebas y observé mejoras significativas en la aplicación:
+
+Optimización del Uso de la Memoria:
+
+Reducción de fugas de memoria: Utilicé el Memory Profiler para identificar y corregir problemas de gestión de memoria. Aseguré que los cursores y conexiones a la base de datos se cerraran adecuadamente en la clase DatabaseHelper, evitando fugas de memoria.
+Uso eficiente de recursos: Aunque no se manejaban imágenes grandes, revisé el código para garantizar un manejo eficiente de las vistas y estados en Jetpack Compose, evitando recomposiciones innecesarias y optimizando el uso de la memoria.
+Mejora del Rendimiento de la Red:
+
+Análisis y optimización de solicitudes de red: Con el Network Profiler, analicé las interacciones con Firebase y optimicé el uso de la red. Implementé la persistencia local de Firebase con setPersistenceEnabled(true), lo que redujo las solicitudes de red al aprovechar el caché local.
+Reducción del consumo de datos: Limité la carga inicial de datos usando limitToLast(50), disminuyendo el volumen de datos descargados y mejorando los tiempos de respuesta.
+Optimización del Uso de la Batería:
+
+Identificación de procesos que consumen batería: Utilicé batterystats y Battery Historian para detectar actividades en segundo plano que consumían batería, como listeners activos constantemente.
+Implementación de prácticas recomendadas: Reemplacé los listeners activos por sincronizaciones periódicas usando WorkManager, programando tareas cada hora. Esto redujo la actividad en segundo plano y, por ende, el consumo de batería.
+Tras las pruebas realizadas con estas mejoras, noté que:
+
+La aplicación es más eficiente en el uso de memoria, evitando cierres inesperados y mejorando la experiencia del usuario.
+El consumo de datos móviles se redujo, lo que beneficia a usuarios con planes de datos limitados.
+La duración de la batería mejoró, ya que la aplicación minimiza las actividades en segundo plano innecesarias.
 
 ## Descripción
 Biblioteca de Novelas es una aplicación de Android para gestionar una colección de novelas. Los usuarios pueden registrarse, iniciar sesión y mantener un registro de sus novelas favoritas, incluyendo información detallada como el título, autor, año de publicación y sinopsis. Cada novela puede ser marcada como favorita y recibir reseñas de los usuarios. La app utiliza Firebase Realtime Database para almacenar la información de las novelas, SQLite para gestionar las credenciales de usuario, y SharedPreferences para guardar las preferencias de personalización, como el color de fondo en la pantalla de inicio de sesión.
