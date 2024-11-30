@@ -3,7 +3,7 @@
 https://github.com/Rodrivdlc/GestionNovelas.git
 
 
-##Ultima actualización: Feedback 5:
+# Ultima actualización: Feedback 5:
 Después de implementar las mejoras indicadas en el enunciado, realicé pruebas y observé mejoras significativas en la aplicación:
 
 Optimización del Uso de la Memoria:
