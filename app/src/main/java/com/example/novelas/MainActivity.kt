@@ -20,10 +20,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import java.util.concurrent.TimeUnit
+import androidx.work.WorkManager
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkRequest
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 
 class MainActivity : ComponentActivity() {
+    private var listaNovelas: List<Novela> = emptyList()
+
+
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var preferencesManager: PreferencesManager
+    private lateinit var valueEventListener: ValueEventListener
 
     private val databaseUrl = "https://feedback2-c4a03-default-rtdb.europe-west1.firebasedatabase.app/"
     private val database = Firebase.database(databaseUrl)
@@ -32,8 +43,27 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         dbHelper = DatabaseHelper(this)
-        preferencesManager = PreferencesManager(this)  // Inicializar PreferencesManager
+        preferencesManager = PreferencesManager(this)
 
+        // Activar persistencia local de Firebase
+        Firebase.database.setPersistenceEnabled(true)
+
+        // Configurar sincronización periódica
+        val syncWorkRequest = PeriodicWorkRequestBuilder<SyncWork>(1, TimeUnit.HOURS).build()
+        WorkManager.getInstance(applicationContext).enqueue(syncWorkRequest)
+
+        // Configurar el ValueEventListener para escuchar cambios en la base de datos
+        valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Actualizar la lista de novelas
+                listaNovelas = snapshot.children.mapNotNull { it.getValue(Novela::class.java) }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Manejo de errores en la consulta de Firebase
+            }
+        }
+        novelasRef.addValueEventListener(valueEventListener)
 
         setContent {
             var isLoggedIn by remember { mutableStateOf(false) }
@@ -44,16 +74,22 @@ class MainActivity : ComponentActivity() {
             } else {
                 if (showRegister) {
                     RegistroScreen(dbHelper) {
-                        showRegister = false  // Vuelve a la pantalla de login tras registrarse
+                        showRegister = false
                     }
                 } else {
                     LoginScreen(dbHelper, preferencesManager, onLoginExitoso = { isLoggedIn = true }) {
-                        showRegister = true  // Muestra la pantalla de registro
+                        showRegister = true
                     }
                 }
             }
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        novelasRef.removeEventListener(valueEventListener) // Detener listeners activos
+    }
+
 
     @Composable
     fun ListaDeNovelas(
