@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Place
 import java.util.concurrent.TimeUnit
 import androidx.work.WorkManager
 import androidx.work.PeriodicWorkRequestBuilder
@@ -120,6 +121,10 @@ class MainActivity : ComponentActivity() {
                     IconButton(onClick = { onEliminar(novela) }) {
                         Icon(imageVector = Icons.Filled.Delete, contentDescription = "Eliminar novela")
                     }
+
+                    IconButton(onClick = { /* Aquí se mostrará el mapa */ }) {
+                        Icon(imageVector = Icons.Default.Place, contentDescription = "Ver en mapa")
+                    }
                 }
             }
         }
@@ -178,6 +183,8 @@ class MainActivity : ComponentActivity() {
         var anoPublicacion by remember { mutableStateOf(TextFieldValue("")) }
         var sinopsis by remember { mutableStateOf(TextFieldValue("")) }
         var novelaSeleccionada by remember { mutableStateOf<Novela?>(null) }
+        var ubicacion by remember { mutableStateOf(TextFieldValue("")) }
+
 
         LaunchedEffect(Unit) {
             novelasRef.get().addOnSuccessListener { snapshot ->
@@ -226,20 +233,34 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxWidth()
             )
 
+            OutlinedTextField(
+                value = ubicacion,
+                onValueChange = { ubicacion = it },
+                label = { Text("Ubicación") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = {
-                    if (titulo.text.isNotEmpty() && autor.text.isNotEmpty() && anoPublicacion.text.isNotEmpty() && sinopsis.text.isNotEmpty()) {
+                    if (titulo.text.isNotEmpty() && autor.text.isNotEmpty() && anoPublicacion.text.isNotEmpty() && sinopsis.text.isNotEmpty() && ubicacion.text.isNotEmpty()) {
                         val ano = anoPublicacion.text.toIntOrNull()
                         if (ano != null) {
-                            val nuevaNovela = Novela(titulo.text, autor.text, ano, sinopsis.text)
+                            val nuevaNovela = Novela(
+                                titulo = titulo.text,
+                                autor = autor.text,
+                                anoPublicacion = ano,
+                                sinopsis = sinopsis.text,
+                                ubicacion = ubicacion.text // Añadimos la ubicación
+                            )
                             novelasRef.push().setValue(nuevaNovela)
                             listaNovelas = listaNovelas + nuevaNovela
                             titulo = TextFieldValue("")
                             autor = TextFieldValue("")
                             anoPublicacion = TextFieldValue("")
                             sinopsis = TextFieldValue("")
+                            ubicacion = TextFieldValue("")
                         }
                     }
                 },
@@ -251,6 +272,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 Text("Añadir Novela")
             }
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
