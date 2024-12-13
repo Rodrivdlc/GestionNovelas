@@ -2,8 +2,11 @@
 
 https://github.com/Rodrivdlc/GestionNovelas.git
 
+# Ultima actualización:
+He añadido una opcion nueva para añadir la ubicación de la novela, la ubicación se guarda en firebase y en la lista de novelas aparece un boton para ver el mapa.
 
-# Ultima actualización: Feedback 5:
+
+# Actualización anterior: Feedback 5:
 Después de implementar las mejoras indicadas en el enunciado, realicé pruebas y observé mejoras significativas en la aplicación:
 
 Optimización del Uso de la Memoria:
