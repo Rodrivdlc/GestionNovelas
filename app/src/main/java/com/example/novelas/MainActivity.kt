@@ -102,8 +102,12 @@ class MainActivity : ComponentActivity() {
         // Variable para manejar la novela seleccionada para mostrar el mapa
         var novelaSeleccionadaParaMapa by remember { mutableStateOf<Novela?>(null) }
 
+        // Mostrar el mapa junto con la ubicación si hay una novela seleccionada
         if (novelaSeleccionadaParaMapa != null) {
-            VerMapa(onDismiss = { novelaSeleccionadaParaMapa = null })
+            VerMapa(
+                ubicacion = novelaSeleccionadaParaMapa!!.ubicacion, // Pasar la ubicación de la novela seleccionada
+                onDismiss = { novelaSeleccionadaParaMapa = null }
+            )
         }
 
         LazyColumn {
