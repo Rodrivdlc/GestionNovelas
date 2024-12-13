@@ -99,6 +99,13 @@ class MainActivity : ComponentActivity() {
         onFavoritoToggle: (Novela) -> Unit,
         onVerDetalles: (Novela) -> Unit
     ) {
+        // Variable para manejar la novela seleccionada para mostrar el mapa
+        var novelaSeleccionadaParaMapa by remember { mutableStateOf<Novela?>(null) }
+
+        if (novelaSeleccionadaParaMapa != null) {
+            VerMapa(onDismiss = { novelaSeleccionadaParaMapa = null })
+        }
+
         LazyColumn {
             items(novelas) { novela ->
                 Row(
@@ -111,6 +118,7 @@ class MainActivity : ComponentActivity() {
                         Text(text = novela.titulo, style = MaterialTheme.typography.bodyLarge)
                         Text(text = "Autor: ${novela.autor}", style = MaterialTheme.typography.bodyMedium)
                         Text(text = "Año: ${novela.anoPublicacion}", style = MaterialTheme.typography.bodyMedium)
+                        Text(text = "Ubicación: ${novela.ubicacion}", style = MaterialTheme.typography.bodyMedium)
                     }
                     IconButton(onClick = { onFavoritoToggle(novela) }) {
                         Icon(
@@ -121,8 +129,7 @@ class MainActivity : ComponentActivity() {
                     IconButton(onClick = { onEliminar(novela) }) {
                         Icon(imageVector = Icons.Filled.Delete, contentDescription = "Eliminar novela")
                     }
-
-                    IconButton(onClick = { /* Aquí se mostrará el mapa */ }) {
+                    IconButton(onClick = { novelaSeleccionadaParaMapa = novela }) {
                         Icon(imageVector = Icons.Default.Place, contentDescription = "Ver en mapa")
                     }
                 }
